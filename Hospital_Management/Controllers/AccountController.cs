@@ -131,78 +131,57 @@ namespace Hospital_Management.Controllers
         }
 
         // GET: Account/Delete/5
-        // GET: Account/Delete/5
-        /*public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Users == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(m => m.UserID == id);
-
+            user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "User deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Failed to delete user: {ex.Message}" });
+            }
 
-            return View(user);
-        }*/
+            
+        }
 
-
-        // GET: Account/Delete/5
-
-
-
-        // POST: Account/Delete/5
-        // POST: Account/Delete/5
-        /*  [HttpPost, ActionName("Delete")]
-          [ValidateAntiForgeryToken]
-          public async Task<IActionResult> Delete(int id)
-          {
-              if (_context.Users == null)
-              {
-                  return Problem("Entity set 'HealthCareDbContext.Users' is null.");
-              }
-
-              var user = await _context.Users.FindAsync(id);
-              if (user == null)
-              {
-                  return NotFound();
-              }
-
-              try
-              {
-                  _context.Users.Remove(user);
-                  await _context.SaveChangesAsync();
-                  return Json(new { success = true, message = "User deleted successfully" });
-              }
-              catch (Exception ex)
-              {
-                  return Json(new { success = false, message = $"Failed to delete user: {ex.Message}" });
-              }
-          }
-  */
-
-
-
-        // POST: Account/Delete/5
-        [HttpPost, ActionName("Delete")]
+        /*
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "User not found." });
             }
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent(); // or any appropriate response for AJAX
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "User deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Failed to delete user: {ex.Message}" });
+            }
         }
+*/
 
 
         private bool UserExists(int id)
