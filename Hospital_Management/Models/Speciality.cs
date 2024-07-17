@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Hospital_Management.Models
 {
@@ -9,8 +10,9 @@ namespace Hospital_Management.Models
 
         [Required]
         [StringLength(100)]
+        [DisplayName("Specialization")]
         public string SpecialtyName { get; set; }
 
-        public virtual ICollection<DoctorSpecialty> DoctorSpecialties { get; set; }
+        public virtual ICollection<DoctorSpecialty>? DoctorSpecialties { get; set; } 
     }
 }

@@ -7,61 +7,59 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital_Management.Controllers
 {
-    
-    public class AdminController : Controller
+    public class SpecialtiesController : Controller
     {
         private readonly HealthCareDbContext _context;
 
-        public AdminController(HealthCareDbContext context)
+        public SpecialtiesController(HealthCareDbContext context)
         {
             _context = context;
         }
 
-        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return _context.Users != null ?
-                        View(await _context.Users.ToListAsync()) :
-                        Problem("Entity set 'HealthCareDbContext.Users'  is null.");
+              return _context.Specialties != null ? 
+                          View(await _context.Specialties.ToListAsync()) :
+                          Problem("Entity set 'HealthCareDbContext.Specialties'  is null.");
         }
 
-        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Users == null)
+            if (id == null || _context.Specialties == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.UserID == id);
-            if (user == null)
+            var specialty = await _context.Specialties
+                .FirstOrDefaultAsync(m => m.SpecialtyID == id);
+            if (specialty == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return View(specialty);
         }
 
-        public IActionResult Register()
+        public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("UserID,Username,Password,Email,PhoneNumber,UserType")] User user)
+        public async Task<IActionResult> Create([Bind("SpecialtyID,SpecialtyName")] Specialty specialty)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
+
+                _context.Add(specialty);
                 await _context.SaveChangesAsync();
-                /*return RedirectToAction(nameof(Index));*/
-                TempData["Success"] = "User Created Successfully";
+                
+                TempData["Success"] = "Specialization Created Successfully";
+                
                 return RedirectToAction(nameof(Index));
             }
 
@@ -70,33 +68,30 @@ namespace Hospital_Management.Controllers
             {
                 Console.WriteLine(error.ErrorMessage);
             }
-            return View("Index");
+
+            return View(specialty);
         }
 
-
-        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Users == null)
+            if (id == null || _context.Specialties == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var specialty = await _context.Specialties.FindAsync(id);
+            if (specialty == null)
             {
                 return NotFound();
             }
-
-            return View(user);
+            return View(specialty);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Edit(int id, [Bind("UserID,Username,Password,Email,PhoneNumber,UserType")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("SpecialtyID,SpecialtyName")] Specialty specialty)
         {
-            if (id != user.UserID)
+            if (id != specialty.SpecialtyID)
             {
                 return NotFound();
             }
@@ -105,13 +100,13 @@ namespace Hospital_Management.Controllers
             {
                 try
                 {
-                    _context.Update(user);
+                    _context.Update(specialty);
                     await _context.SaveChangesAsync();
-                    TempData["Success"] = "User Edited Successfully";
+                    TempData["Success"] = "Specialization Edited Successfully";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.UserID))
+                    if (!SpecialtyExists(specialty.SpecialtyID))
                     {
                         return NotFound();
                     }
@@ -122,11 +117,9 @@ namespace Hospital_Management.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View("Index");
+            return View(specialty);
         }
 
-
-        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,31 +127,28 @@ namespace Hospital_Management.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.UserID == id);
-            user = await _context.Users.FindAsync(id);
-            if (user == null)
+            var speciality = await _context.Specialties
+                .FirstOrDefaultAsync(m => m.SpecialtyID == id);
+            speciality = await _context.Specialties.FindAsync(id);
+            if (speciality == null)
             {
                 return NotFound();
             }
             try
             {
-                _context.Users.Remove(user);
+                _context.Specialties.Remove(speciality);
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "User deleted successfully" });
+                return Json(new { success = true, message = "Specialization deleted successfully" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Failed to delete user: {ex.Message}" });
+                return Json(new { success = false, message = $"Failed to delete Specialization: {ex.Message}" });
             }
-
-
         }
 
-        [Authorize]
-        private bool UserExists(int id)
+        private bool SpecialtyExists(int id)
         {
-            return (_context.Users?.Any(e => e.UserID == id)).GetValueOrDefault();
+          return (_context.Specialties?.Any(e => e.SpecialtyID == id)).GetValueOrDefault();
         }
     }
 }

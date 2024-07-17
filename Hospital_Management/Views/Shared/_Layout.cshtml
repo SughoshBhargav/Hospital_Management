@@ -1,4 +1,14 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userEmail = HttpContextAccessor.HttpContext.User.Identity.Name;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,38 +21,52 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.2/dist/sweetalert2.all.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/confirmation.js"></script>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Hospital_Management</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+            <div class="row container-fluid ml-5">
+                <ul class="navbar-nav text-center">
+                    @if (!string.IsNullOrEmpty(userEmail))
+                    {
+                        <li class="nav-item ">
+                            <span class="navbar-text mr-2">Logged in as: @userEmail</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index">Accounts</a>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                <button type="submit" class="btn btn-link nav-link">Logout</button>
+                            </form>
                         </li>
-                    </ul>
-                </div>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Account/Login">Login</a>
+                        </li>
+                    }
+                </ul>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            <partial name="_Notification" />
-            @RenderBody()
-        </main>
+    <div class="container-fluid">
+        <div class="row">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="col-md-2">
+                    <partial name="_SideNav" />
+                </div>
+            }
+            <div class="col-md-10">
+                <partial name="_Notification" />
+                <div class="content">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
     </div>
-
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - Hospital_Management - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

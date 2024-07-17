@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Hospital_Management.Models
 {
-    public class User
+    public class User 
     {
         [Key]
         public int UserID { get; set; }
