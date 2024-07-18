@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Hospital_Management.Models
 {
@@ -22,17 +23,19 @@ namespace Hospital_Management.Models
         [DataType(DataType.Time)]
         public TimeSpan AppointmentTime { get; set; }
 
-        [Required]
         [StringLength(20)]
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
 
         [StringLength(255)]
-        public string CancellationReason { get; set; }
+        public string CancellationReason { get; set; } = string.Empty;
+
+        [StringLength(255)]
+        public string PatientHealthIssues { get; set; } = string.Empty;
 
         [ForeignKey("PatientID")]
-        public virtual Patient Patient { get; set; }
+        public virtual Patient? Patient { get; set; }
 
         [ForeignKey("DoctorID")]
-        public virtual Doctor Doctor { get; set; }
+        public virtual Doctor? Doctor { get; set; }
     }
 }

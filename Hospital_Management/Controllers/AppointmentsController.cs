@@ -49,8 +49,8 @@ namespace Hospital_Management.Controllers
         // GET: Appointments/Create
         public IActionResult Create()
         {
-            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Gender");
-            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "BloodGroup");
+            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name");
+            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name");
             return View();
         }
 
@@ -59,16 +59,27 @@ namespace Hospital_Management.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppointmentID,PatientID,DoctorID,AppointmentDate,AppointmentTime,Status,CancellationReason")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("AppointmentID,PatientID,DoctorID,AppointmentDate,AppointmentTime,Status,CancellationReason,PatientHealthIssues")] Appointment appointment)
         {
+            appointment.Status = "Applied"; // Set default status here
+
             if (ModelState.IsValid)
             {
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Gender", appointment.DoctorID);
-            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "BloodGroup", appointment.PatientID);
+
+            var errors = ModelState.Values.SelectMany(u => u.Errors);
+            foreach (var error in errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
+
+            // Repopulate dropdown lists
+            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name", appointment.DoctorID);
+            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name", appointment.PatientID);
+
             return View(appointment);
         }
 
@@ -85,8 +96,8 @@ namespace Hospital_Management.Controllers
             {
                 return NotFound();
             }
-            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Gender", appointment.DoctorID);
-            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "BloodGroup", appointment.PatientID);
+            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name", appointment.DoctorID);
+            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name", appointment.PatientID);
             return View(appointment);
         }
 
@@ -95,7 +106,7 @@ namespace Hospital_Management.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AppointmentID,PatientID,DoctorID,AppointmentDate,AppointmentTime,Status,CancellationReason")] Appointment appointment)
+        public async Task<IActionResult> Edit(int id, [Bind("AppointmentID,PatientID,DoctorID,AppointmentDate,AppointmentTime,Status,CancellationReason,PatientHealthIssues")] Appointment appointment)
         {
             if (id != appointment.AppointmentID)
             {
@@ -122,8 +133,8 @@ namespace Hospital_Management.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Gender", appointment.DoctorID);
-            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "BloodGroup", appointment.PatientID);
+            ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name", appointment.DoctorID);
+            ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name", appointment.PatientID);
             return View(appointment);
         }
 

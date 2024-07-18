@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
+using System.Security.Claims;
 
 namespace Hospital_Management.Controllers
 {
@@ -22,8 +23,15 @@ namespace Hospital_Management.Controllers
         // GET: Patients
         public async Task<IActionResult> Index()
         {
-            var healthCareDbContext = _context.Patients.Include(p => p.User);
-            return View(await healthCareDbContext.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Retrieve only the patient details for the current user
+            var patients = await _context.Patients
+                .Include(p => p.User)
+                .Where(p => p.UserID == Convert.ToInt32(userId)) // Filter by UserID
+                .ToListAsync();
+
+            return View(patients);
         }
 
         // GET: Patients/Details/5
@@ -48,7 +56,13 @@ namespace Hospital_Management.Controllers
         // GET: Patients/Create
         public IActionResult Create()
         {
-            ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email");
+            /*ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _context.Users.Find(userId);
+
+            ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email", userId);
+            ViewBag.UserName = user?.Username;
+            ViewBag.UserEmail = user?.Email;*/
             return View();
         }
 
@@ -57,18 +71,30 @@ namespace Hospital_Management.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PatientID,UserID,Name,DOB,Gender,BloodGroup,Address")] Patient patient)
+        public async Task<IActionResult> Create([Bind("PatientID,Name,DOB,Gender,BloodGroup,Address")] Patient patient)
         {
+            // Fetch the UserID from the currently logged-in user
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Assign the UserID to the patient object
+            patient.UserID = Convert.ToInt32(userId);
+           /* Console.WriteLine(userId.GetType().Name);*/
             if (ModelState.IsValid)
             {
                 _context.Add(patient);
                 await _context.SaveChangesAsync();
+                TempData["success"] = "Patient tCreated Successfully";
                 return RedirectToAction(nameof(Index));
+            }
+
+            var errors = ModelState.Values.SelectMany(x => x.Errors);
+            foreach (var error in errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
             }
             ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email", patient.UserID);
             return View(patient);
         }
-
         // GET: Patients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -104,6 +130,7 @@ namespace Hospital_Management.Controllers
                 {
                     _context.Update(patient);
                     await _context.SaveChangesAsync();
+                    TempData["success"] = "Patient details edited successfully";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -125,39 +152,30 @@ namespace Hospital_Management.Controllers
         // GET: Patients/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Patients == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var patient = await _context.Patients
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.PatientID == id);
+                .FirstOrDefaultAsync(m => m.UserID == id);
+            patient = await _context.Patients.FindAsync(id);
             if (patient == null)
             {
                 return NotFound();
             }
-
-            return View(patient);
-        }
-
-        // POST: Patients/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Patients == null)
-            {
-                return Problem("Entity set 'HealthCareDbContext.Patients'  is null.");
-            }
-            var patient = await _context.Patients.FindAsync(id);
-            if (patient != null)
+            try
             {
                 _context.Patients.Remove(patient);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Patient details deleted successfully" });
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Failed to delete patient details: {ex.Message}" });
+            }
+
+
         }
 
         private bool PatientExists(int id)

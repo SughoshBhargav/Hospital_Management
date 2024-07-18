@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Create</h1>
@@ -31,15 +30,20 @@
                 <input asp-for="AppointmentTime" class="form-control" />
                 <span asp-validation-for="AppointmentTime" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
                 <input asp-for="Status" class="form-control" />
                 <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            </div> *@
+            @* <div class="form-group">
                 <label asp-for="CancellationReason" class="control-label"></label>
                 <input asp-for="CancellationReason" class="form-control" />
                 <span asp-validation-for="CancellationReason" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <label asp-for="PatientHealthIssues" class="control-label"></label>
+                <input asp-for="PatientHealthIssues" class="form-control" />
+                <span asp-validation-for="PatientHealthIssues" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

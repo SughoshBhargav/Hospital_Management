@@ -47,7 +47,8 @@ namespace HealthCareManagement.Controllers
                     {
                         new Claim(ClaimTypes.Name, user.Username),
                         new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Role, user.UserType)
+                        new Claim(ClaimTypes.Role, user.UserType),
+                        new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString())
                     };
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
