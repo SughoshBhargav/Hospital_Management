@@ -2,16 +2,18 @@
 
 @{
     ViewData["Title"] = "Index";
+    var userType = Context.Session.GetString("UserType");
 }
 
 <div class="text-center">
     <h1>Doctors List</h1>
 </div>
-
-<p>
-    <a asp-action="Create" class="btn btn-success">Add Doctor</a>
-</p>
-
+@if (userType == "Admin")
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Add Doctor</a>
+    </p>
+}
 <table class="table table-bordered table-striped">
     <thead>
         <tr class="text-center">
@@ -21,7 +23,10 @@
             <th>Experience</th>
             <th>About</th>
             <th>Specialization</th>
-            <th>Modify</th>
+            <th>Number</th>
+            @if(userType == "Admin"){
+                <th>Modify</th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -46,17 +51,22 @@
                         <span>No specializations</span>
                     }
                 </td>
-                <td class="text-center">
-                    <div class="w-75 btn-group" role="group">
-                        <a asp-action="Edit" asp-route-id="@obj.DoctorID" class="btn btn-primary mx-2">
-                            <i class="bi bi-pen-fill"></i>Edit
-                        </a>
+                <td>@obj.User.PhoneNumber</td>
+                @if(userType == "Admin")
+                {
+                    <td class="text-center">
+                        <div class="w-75 btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@obj.DoctorID" class="btn btn-primary mx-2">
+                                <i class="bi bi-pen-fill"></i>Edit
+                            </a>
 
-                        <button type="button" class="btn btn-danger mx-2" onclick="ConfirmationAlert('@Url.Action("Delete", "Doctors", new { id = obj.DoctorID })')">
-                            <i class="bi bi-trash-fill"></i> Delete
-                        </button>
-                    </div>
-                </td>
+                            <button type="button" class="btn btn-danger mx-2" onclick="ConfirmationAlert('@Url.Action("Delete", "Doctors", new { id = obj.DoctorID })')">
+                                <i class="bi bi-trash-fill"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                }
+                
             </tr>
         }
     </tbody>

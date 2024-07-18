@@ -17,14 +17,14 @@
                     <!-- Email input -->
                     <div data-mdb-input-init class="form-outline mb-4">
                         <input type="email" asp-for="Email" id="form3Example3" class="form-control form-control-lg"
-                               placeholder="Enter a valid email address" />
+                               placeholder="Email Id" />
                      <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <!-- Password input -->
                     <div data-mdb-input-init class="form-outline mb-3">
                         <input type="password" asp-for="Password" id="form3Example4" class="form-control form-control-lg"
-                               placeholder="Enter password" />
+                               placeholder="Password" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
@@ -41,8 +41,7 @@
                                    style="padding-left: 2.5rem; padding-right: 2.5rem;" value="Login" />
                         </div>
                         <p class="small fw-bold mt-2 pt-1 mb-0">
-                            Don't have an account? <a asp-controller="Admin" asp-action="Register"
-                                                      class="link-danger">Register</a>
+                            Don't have an account? <a href="/Account/Register"  class="link-danger">Register</a>
                         </p>
                     </div>
 

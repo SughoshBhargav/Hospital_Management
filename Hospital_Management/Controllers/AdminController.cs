@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
 using Microsoft.AspNetCore.Authorization;
+using YourProject.Attributes;
 
 namespace Hospital_Management.Controllers
 {
@@ -22,6 +23,7 @@ namespace Hospital_Management.Controllers
         }
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Index()
         {
             return _context.Users != null ?
@@ -30,6 +32,7 @@ namespace Hospital_Management.Controllers
         }
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Users == null)
@@ -77,11 +80,12 @@ namespace Hospital_Management.Controllers
             {
                 Console.WriteLine(error.ErrorMessage);
             }
-            return View("Index");
+            return View("Login");
         }
 
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Users == null)
@@ -101,6 +105,7 @@ namespace Hospital_Management.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Edit(int id, [Bind("UserID,Username,Password,Email,PhoneNumber,UserType")] User user)
         {
             if (id != user.UserID)
@@ -135,6 +140,7 @@ namespace Hospital_Management.Controllers
 
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

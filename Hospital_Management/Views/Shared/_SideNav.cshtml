@@ -12,15 +12,13 @@
         <a asp-controller="DoctorSpecialties" asp-action="Index" class="list-group-item">DoctorsSpeciality</a>
     </div>
 }
-else
+@if(userType == "Patient")
 {
     <div class="list-group">
-        
-        <a asp-controller="Specialties" asp-action="Index" class="list-group-item">Speciality</a>
-        <a asp-for="" class="list-group-item">Patient</a>
-        <a asp-for="" class="list-group-item">Appointment</a>
+        <a asp-controller="Appointments" asp-action="Index" class="list-group-item">Register as Patient</a>
+        <a asp-controller="Patients" asp-action="Index" class="list-group-item">Appointment</a>
         <a asp-controller="Doctors" asp-action="Index" class="list-group-item">Doctors</a>
-        <a asp-controller="DoctorSpecialties" asp-action="Index" class="list-group-item">DoctorsSpeciality</a>
+        
     </div>
 }
 

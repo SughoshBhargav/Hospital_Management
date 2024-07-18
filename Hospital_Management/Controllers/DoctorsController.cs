@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
 using Microsoft.AspNetCore.Authorization;
+using YourProject.Attributes;
 
 namespace Hospital_Management.Controllers
 {
@@ -22,6 +23,7 @@ namespace Hospital_Management.Controllers
         }
 
         // GET: Doctors
+        
         public async Task<IActionResult> Index()
         {
             var healthCareDbContext = _context.Doctors
@@ -31,6 +33,8 @@ namespace Hospital_Management.Controllers
             return View(await healthCareDbContext.ToListAsync());
         }
         // GET: Doctors/Details/5
+        [AdminOnly]
+        [PatientOnly]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Doctors == null)
@@ -50,8 +54,8 @@ namespace Hospital_Management.Controllers
         }
 
         // GET: Doctors/Create
-       
 
+        [AdminOnly]
         public IActionResult Create()
         {
             // Fetch users who have the role "Doctor"
@@ -69,6 +73,7 @@ namespace Hospital_Management.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AdminOnly]
         public async Task<IActionResult> Create([Bind("DoctorID,UserID,Name,Gender,Experience,AboutDoctor")] Doctor doctor)
         {
             // Fetch the user with the selected UserID and role "Doctor"
@@ -104,6 +109,7 @@ namespace Hospital_Management.Controllers
 
 
         // GET: Doctors/Edit/5
+        [AdminOnly]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Doctors == null)
@@ -125,6 +131,7 @@ namespace Hospital_Management.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AdminOnly]
         public async Task<IActionResult> Edit(int id, [Bind("DoctorID,UserID,Name,Gender,Experience,AboutDoctor")] Doctor doctor)
         {
             if (id != doctor.DoctorID)
@@ -195,7 +202,7 @@ namespace Hospital_Management.Controllers
              await _context.SaveChangesAsync();
              return RedirectToAction(nameof(Index));
          }*/
-
+        [AdminOnly]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
