@@ -36,6 +36,13 @@ namespace HealthCareManagement.Controllers
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.Email.ToLower() == (email.ToLower()) && u.Password == (password));
 
+                var userType = _context.Users
+                        .Where(u => u.Email == email)
+                        .Select(u => u.UserType)
+                        .FirstOrDefault();
+
+                HttpContext.Session.SetString("UserType", userType);
+
                 if (user != null)
                 {
                     var claims = new List<Claim>
@@ -49,7 +56,7 @@ namespace HealthCareManagement.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-                    return RedirectToAction("Index", "Admin");
+                    return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("", "Invalid login attempt.");
             }

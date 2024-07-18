@@ -4,56 +4,66 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="text-center">
+    <h1>Doctors List</h1>
+</div>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Add Doctor</a>
 </p>
-<table class="table">
+
+<table class="table table-bordered table-striped">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gender)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Experience)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AboutDoctor)
-            </th>
-            <th></th>
+        <tr class="text-center">
+            <th>Email</th>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Experience</th>
+            <th>About</th>
+            <th>Specialization</th>
+            <th>Modify</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Experience)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AboutDoctor)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.DoctorID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.DoctorID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.DoctorID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var obj in Model)
+        {
+            <tr>
+                <td>@obj.User.Email</td>
+                <td>@obj.Name</td>
+                <td>@obj.Gender</td>
+                <td>@obj.Experience</td>
+                <td>@obj.AboutDoctor</td>
+                <td>
+                    @if (obj.DoctorSpecialties != null)
+                    {
+                        foreach (var specialty in obj.DoctorSpecialties)
+                        {
+                            @Html.DisplayFor(modelItem => specialty.Specialty.SpecialtyName)
+                        }
+                    }
+                    else
+                    {
+                        <span>No specializations</span>
+                    }
+                </td>
+                <td class="text-center">
+                    <div class="w-75 btn-group" role="group">
+                        <a asp-action="Edit" asp-route-id="@obj.DoctorID" class="btn btn-primary mx-2">
+                            <i class="bi bi-pen-fill"></i>Edit
+                        </a>
+
+                        <button type="button" class="btn btn-danger mx-2" onclick="ConfirmationAlert('@Url.Action("Delete", "Doctors", new { id = obj.DoctorID })')">
+                            <i class="bi bi-trash-fill"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        // Other page-specific scripts can go here
+    </script>
+}

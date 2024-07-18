@@ -58,11 +58,18 @@ namespace Hospital_Management.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                /*return RedirectToAction(nameof(Index));*/
-                TempData["Success"] = "User Created Successfully";
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(user);
+                    await _context.SaveChangesAsync();
+                    /*return RedirectToAction(nameof(Index));*/
+                    TempData["Success"] = "User Created Successfully";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["error"] = "Something went wrong!!";
+                }
             }
 
             var errors = ModelState.Values.SelectMany(v => v.Errors);
@@ -111,6 +118,7 @@ namespace Hospital_Management.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    TempData["error"] = "Something went wrong!!";
                     if (!UserExists(user.UserID))
                     {
                         return NotFound();
