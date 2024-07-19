@@ -11,8 +11,8 @@ namespace Hospital_Management.Models
         public int SpecialtyID { get; set; }
 
         [ForeignKey("DoctorID")]
-        public virtual Doctor Doctor { get; set; }
+        public virtual Doctor? Doctor { get; set; }
         [ForeignKey("SpecialtyID")]
-        public virtual Specialty Specialty { get; set; }
+        public virtual Specialty? Specialty { get; set; }
     }
 }

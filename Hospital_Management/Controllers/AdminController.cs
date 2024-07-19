@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
 using Microsoft.AspNetCore.Authorization;
+using YourProject.Attributes;
 
 namespace Hospital_Management.Controllers
 {
@@ -22,6 +23,7 @@ namespace Hospital_Management.Controllers
         }
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Index()
         {
             return _context.Users != null ?
@@ -30,6 +32,7 @@ namespace Hospital_Management.Controllers
         }
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Users == null)
@@ -58,11 +61,18 @@ namespace Hospital_Management.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                /*return RedirectToAction(nameof(Index));*/
-                TempData["Success"] = "User Created Successfully";
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(user);
+                    await _context.SaveChangesAsync();
+                    /*return RedirectToAction(nameof(Index));*/
+                    TempData["Success"] = "User Created Successfully";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["error"] = "Something went wrong!!";
+                }
             }
 
             var errors = ModelState.Values.SelectMany(v => v.Errors);
@@ -70,11 +80,12 @@ namespace Hospital_Management.Controllers
             {
                 Console.WriteLine(error.ErrorMessage);
             }
-            return View("Index");
+            return View("Login");
         }
 
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Users == null)
@@ -94,6 +105,7 @@ namespace Hospital_Management.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Edit(int id, [Bind("UserID,Username,Password,Email,PhoneNumber,UserType")] User user)
         {
             if (id != user.UserID)
@@ -111,6 +123,7 @@ namespace Hospital_Management.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
+                    TempData["error"] = "Something went wrong!!";
                     if (!UserExists(user.UserID))
                     {
                         return NotFound();
@@ -127,6 +140,7 @@ namespace Hospital_Management.Controllers
 
 
         [Authorize]
+        [AdminOnly]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

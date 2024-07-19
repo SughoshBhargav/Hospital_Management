@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
+using Microsoft.AspNetCore.Authorization;
+using YourProject.Attributes;
 
 namespace Hospital_Management.Controllers
 {
+    [Authorize]
+    [AdminOnly]
     public class SpecialtiesController : Controller
     {
         private readonly HealthCareDbContext _context;

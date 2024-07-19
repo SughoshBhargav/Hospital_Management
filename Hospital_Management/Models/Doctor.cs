@@ -12,7 +12,7 @@ namespace Hospital_Management.Models
         public int UserID { get; set; }
 
         [ForeignKey("UserID")]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -26,7 +26,9 @@ namespace Hospital_Management.Models
 
         public string AboutDoctor { get; set; }
 
-        public virtual ICollection<DoctorSpecialty> DoctorSpecialties { get; set; }
-        public virtual ICollection<Appointment> Appointments { get; set; }
+        public virtual ICollection<DoctorSpecialty>? DoctorSpecialties { get; set; }
+        public virtual ICollection<Appointment>? Appointments { get; set; }
+        /*public virtual ICollection<Specialty> Specialities{ get; set; }*/
     }
 }
+    

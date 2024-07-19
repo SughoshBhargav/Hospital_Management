@@ -14,49 +14,55 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
-  font-family:Roboto,sans-serif;
+    margin-bottom: 60px;
+    font-family: Roboto,sans-serif;
+    overflow-x: hidden;
 }
 
-.login-logout-card .card-header{
-    padding : 0px 0px 12px 0px;
+.login-details {
+    flex-direction : column;
+    margin-left : 80%;
+
 }
 
-.login-logout-card ul.nav-tabs{
-    margin:0px 0px -12px 0px;
+table th{
+    font-weight : bold;
 }
 
-.login-logout-card li.nav-item{
-    width:50%;
-}
-
-.login-logout-card a.nav-link{
-    font-size : 1rem;
-    color:#495057;
+table tr td{
     text-align : center;
-    padding:1rem;
 }
 
-.login-logout-card .card-body{
-    padding:10px 20px;
+.login:hover{
+    background-color : red;
+    float : right;
 }
 
-/* site.css or custom styles */
-
-/* Adjust form control height */
-.form-control {
-    height: 38px;
+.mainbody{
+    margin-left:100px;
 }
 
-/* Increase button padding */
-.btn {
-    padding: 8px 16px;
+.list-group-item{
+    font-weight:bold;
 }
 
-/* Style validation error messages */
-.text-danger {
-    font-size: 0.875rem;
-    font-style: italic;
+.access{
+    margin-left:200px;
 }
 
-/* Optional: Add more specific styles for labels, form groups, etc. */
+.paragraph{
+    margin-left:200px;
+}
+
+.navitems{
+    margin-left:2200px;
+}
+
+.parentbody {
+    background-color: white;
+}
+
+
+tr:hover {
+    background-color: #D6EEEE;
+}
