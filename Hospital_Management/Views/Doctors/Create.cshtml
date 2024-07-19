@@ -56,7 +56,7 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Function to populate the Name field based on the selected UserID
+       
         function populateNameField(userId) {
             if (userId) {
                 $.ajax({
@@ -75,12 +75,10 @@
         }
 
         $(document).ready(function () {
-            // Get the currently selected UserID on page load
+            
             var initialUserId = $('#UserID').val();
-            // Populate the Name field based on the initial selection
+            
             populateNameField(initialUserId);
-
-            // Change event handler for the UserID dropdown
             $('#UserID').change(function () {
                 var userId = $(this).val();
                 populateNameField(userId);

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using YourProject.Attributes;
 
 namespace Hospital_Management.Controllers
 {
@@ -22,8 +25,33 @@ namespace Hospital_Management.Controllers
         // GET: Appointments
         public async Task<IActionResult> Index()
         {
-            var healthCareDbContext = _context.Appointments.Include(a => a.Doctor).Include(a => a.Patient);
-            return View(await healthCareDbContext.ToListAsync());
+            var userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+
+
+            IQueryable<Appointment> appointments = _context.Appointments
+                .Include(a => a.Doctor)
+                .Include(a => a.Patient);
+
+            if (role == "Doctor")
+            {
+                var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == userId);
+                if (doctor != null)
+                {
+                    appointments = appointments.Where(a => a.DoctorID == doctor.DoctorID);
+                }
+            }
+            else if (role == "Patient")
+            {
+                var patient = await _context.Patients.FirstOrDefaultAsync(p => p.UserID == userId);
+                if (patient != null)
+                {
+                    appointments = appointments.Where(a => a.PatientID == patient.PatientID);
+                }
+            }
+
+            return View(await appointments.ToListAsync());
         }
 
         // GET: Appointments/Details/5
@@ -54,14 +82,12 @@ namespace Hospital_Management.Controllers
             return View();
         }
 
-        // POST: Appointments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AppointmentID,PatientID,DoctorID,AppointmentDate,AppointmentTime,Status,CancellationReason,PatientHealthIssues")] Appointment appointment)
         {
-            appointment.Status = "Applied"; // Set default status here
+            appointment.Status = "Applied";
 
             if (ModelState.IsValid)
             {
@@ -76,14 +102,13 @@ namespace Hospital_Management.Controllers
                 Console.WriteLine(error.ErrorMessage);
             }
 
-            // Repopulate dropdown lists
+
             ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name", appointment.DoctorID);
             ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name", appointment.PatientID);
 
             return View(appointment);
         }
 
-        // GET: Appointments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Appointments == null)
@@ -101,13 +126,18 @@ namespace Hospital_Management.Controllers
             return View(appointment);
         }
 
-        // POST: Appointments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AppointmentID,PatientID,DoctorID,AppointmentDate,AppointmentTime,Status,CancellationReason,PatientHealthIssues")] Appointment appointment)
         {
+            var patientId = await _context.Appointments
+                .Where(a => a.AppointmentID == appointment.AppointmentID)
+                .Select(a => a.PatientID)
+                .FirstOrDefaultAsync();
+            appointment.PatientID = patientId;
             if (id != appointment.AppointmentID)
             {
                 return NotFound();
@@ -138,48 +168,40 @@ namespace Hospital_Management.Controllers
             return View(appointment);
         }
 
+      
+
         // GET: Appointments/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Appointments == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var appointment = await _context.Appointments
-                .Include(a => a.Doctor)
-                .Include(a => a.Patient)
+            var appointments = await _context.Appointments
                 .FirstOrDefaultAsync(m => m.AppointmentID == id);
-            if (appointment == null)
+            appointments = await _context.Appointments.FindAsync(id);
+            if (appointments == null)
             {
                 return NotFound();
             }
-
-            return View(appointment);
-        }
-
-        // POST: Appointments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Appointments == null)
+            try
             {
-                return Problem("Entity set 'HealthCareDbContext.Appointments'  is null.");
+                _context.Appointments.Remove(appointments);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Appointmnet deleted successfully" });
             }
-            var appointment = await _context.Appointments.FindAsync(id);
-            if (appointment != null)
+            catch (Exception ex)
             {
-                _context.Appointments.Remove(appointment);
+                return Json(new { success = false, message = $"Failed to delete Appointment: {ex.Message}" });
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
+
+        }
         private bool AppointmentExists(int id)
         {
-          return (_context.Appointments?.Any(e => e.AppointmentID == id)).GetValueOrDefault();
+            return (_context.Appointments?.Any(e => e.AppointmentID == id)).GetValueOrDefault();
         }
     }
 }

@@ -58,9 +58,6 @@ namespace Hospital_Management.Controllers
             return View();
         }
 
-        // POST: DoctorSpecialties/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DoctorSpecialtyID,DoctorID,SpecialtyID")] DoctorSpecialty doctorSpecialty)
@@ -109,8 +106,7 @@ namespace Hospital_Management.Controllers
         }
 
         // POST: DoctorSpecialties/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DoctorSpecialtyID,DoctorID,SpecialtyID")] DoctorSpecialty doctorSpecialty)
@@ -148,44 +144,7 @@ namespace Hospital_Management.Controllers
             return View(doctorSpecialty);
         }
 
-        // GET: DoctorSpecialties/Delete/5
-        /*public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.DoctorSpecialties == null)
-            {
-                return NotFound();
-            }
-
-            var doctorSpecialty = await _context.DoctorSpecialties
-                .Include(d => d.Doctor)
-                .Include(d => d.Specialty)
-                .FirstOrDefaultAsync(m => m.DoctorSpecialtyID == id);
-            if (doctorSpecialty == null)
-            {
-                return NotFound();
-            }
-
-            return View(doctorSpecialty);
-        }
-
-        // POST: DoctorSpecialties/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.DoctorSpecialties == null)
-            {
-                return Problem("Entity set 'HealthCareDbContext.DoctorSpecialties'  is null.");
-            }
-            var doctorSpecialty = await _context.DoctorSpecialties.FindAsync(id);
-            if (doctorSpecialty != null)
-            {
-                _context.DoctorSpecialties.Remove(doctorSpecialty);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }*/
+ 
 
         public async Task<IActionResult> Delete(int? id)
         {

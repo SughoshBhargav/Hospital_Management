@@ -2,70 +2,64 @@
 
 @{
     ViewData["Title"] = "Index";
+    var userType = Context.Session.GetString("UserType");
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<div class="text-center my-3">
+    <h2>Appointments List</h2>
+</div>
+@if (userType == "Patient")
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create Appointment</a>
+    </p>
+}
+<table class="table table-bordered table-striped">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.AppointmentDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AppointmentTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CancellationReason)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Patient.BloodGroup)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Patient)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Doctor)
-            </th>
-            <th></th>
+        <tr class="text-center">
+            <th>Appointment Date</th>
+            <th>Appointment Time</th>
+            <th>Status</th>
+            <th>Cancellation Reason</th>
+            <th>Patient Health Issues</th>
+            <th>Blood Group</th>
+            <th>Doctor Name</th>
+            <th>Modify</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AppointmentDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AppointmentTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CancellationReason)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientHealthIssues)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Patient.BloodGroup)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Doctor.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AppointmentID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AppointmentID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AppointmentID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var obj in Model)
+        {
+            <tr>
+                <td>@obj.AppointmentDate</td>
+                <td>@obj.AppointmentTime</td>
+                <td>@obj.Status</td>
+                <td>@obj.CancellationReason</td>
+                <td>@obj.PatientHealthIssues</td>
+                <td>@obj.Patient.BloodGroup</td>
+                <td>@obj.Doctor.Name</td>
+           
+                
+                    <td class="text-center">
+                        <div class="w-75 btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@obj.AppointmentID" class="btn btn-primary mx-2">
+                                <i class="bi bi-pen-fill"></i>Edit
+                            </a>
+
+                            <button type="button" class="btn btn-danger mx-2" onclick="ConfirmationAlert('@Url.Action("Delete", "Appointments", new { id = obj.AppointmentID })')">
+                                <i class="bi bi-trash-fill"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                
+                
+            </tr>
+        }
     </tbody>
 </table>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

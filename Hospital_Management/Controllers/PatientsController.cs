@@ -24,15 +24,47 @@ namespace Hospital_Management.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            List<Patient> patients;
 
-            // Retrieve only the patient details for the current user
-            var patients = await _context.Patients
-                .Include(p => p.User)
-                .Where(p => p.UserID == Convert.ToInt32(userId)) // Filter by UserID
-                .ToListAsync();
+            if (role == "Patient")
+            {
+                patients = await _context.Patients
+                    .Include(p => p.User)
+                    .Where(p => p.UserID == Convert.ToInt32(userId)) 
+                    .ToListAsync();
+            }
+            else if (role == "Admin")
+            {
+                patients = await _context.Patients
+                    .Include(p => p.User) 
+                    .ToListAsync();
+            }
+            else if (role == "Doctor")
+            {
+                var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == Convert.ToInt32(userId));
+                if (doctor != null)
+                {
+                    patients = await _context.Appointments
+                        .Include(a => a.Patient)
+                        .Where(a => a.DoctorID == doctor.DoctorID)
+                        .Select(a => a.Patient)
+                        .Distinct()
+                        .ToListAsync();
+                }
+                else
+                {
+                    patients = new List<Patient>();
+                }
+            }
+            else
+            {
+                patients = new List<Patient>();
+            }
 
             return View(patients);
         }
+
 
         // GET: Patients/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -73,12 +105,11 @@ namespace Hospital_Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("PatientID,Name,DOB,Gender,BloodGroup,Address")] Patient patient)
         {
-            // Fetch the UserID from the currently logged-in user
+           
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Assign the UserID to the patient object
             patient.UserID = Convert.ToInt32(userId);
-           /* Console.WriteLine(userId.GetType().Name);*/
+
             if (ModelState.IsValid)
             {
                 _context.Add(patient);
@@ -113,8 +144,7 @@ namespace Hospital_Management.Controllers
         }
 
         // POST: Patients/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PatientID,UserID,Name,DOB,Gender,BloodGroup,Address")] Patient patient)

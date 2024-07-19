@@ -5,8 +5,8 @@
     var userType = Context.Session.GetString("UserType");
 }
 
-<div class="text-center">
-    <h1>Doctors List</h1>
+<div class="text-center my-2">
+    <h2>Doctors List</h2>
 </div>
 @if (userType == "Admin")
 {
@@ -73,7 +73,7 @@
 </table>
 
 @section Scripts {
-    <script>
-        // Other page-specific scripts can go here
-    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

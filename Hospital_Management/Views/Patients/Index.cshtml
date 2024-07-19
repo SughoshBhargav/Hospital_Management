@@ -2,29 +2,40 @@
 
 @{
     ViewData["Title"] = "Index";
-    //var userType = Context.Session.GetString("UserType");
+    var userType = Context.Session.GetString("UserType");
 }
-<p>
-    <a class="btn btn-success" asp-action="Create">Create New</a>
-</p>
+
+<div class="text-center">
+    <h2>Patients</h2>
+</div>
+
+@if(userType != "Doctor")
+{
+    <p>
+        <a class="btn btn-success" asp-action="Create">Create New</a>
+    </p>
+}
+
 <table class="table table-bordered table-striped">
-    <thead>
+    <thead class="text-dark">
         <tr class="text-center">
-            <th>Email</th>
+            @*<th>Email</th>*@
             <th>Name</th>
             <th>DOB</th>
             <th>Gender</th>
             <th>Blood Group</th>
             <th>Address</th>
             <th>Modify</th>
+
         </tr>
     </thead>
     <tbody>
         @foreach (var obj in Model)
         {
             <tr class="text-center">
-                <td>@obj.User.Email</td>
+               @* <td>@obj.User.Email</td>*@
                 <td>@obj.Name</td>
+                
                 <td>@obj.DOB</td>
                 <td>@obj.Gender</td>
                 <td>@obj.BloodGroup</td>

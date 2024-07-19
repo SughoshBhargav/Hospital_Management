@@ -53,7 +53,6 @@ namespace Hospital_Management.Controllers
             return View(doctor);
         }
 
-        // GET: Doctors/Create
 
         [AdminOnly]
         public IActionResult Create()
@@ -67,16 +66,12 @@ namespace Hospital_Management.Controllers
         }
 
 
-        // POST: Doctors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AdminOnly]
         public async Task<IActionResult> Create([Bind("DoctorID,UserID,Name,Gender,Experience,AboutDoctor")] Doctor doctor)
         {
-            // Fetch the user with the selected UserID and role "Doctor"
+     
             doctor.User = await _context.Users.FirstOrDefaultAsync(u => u.UserID == doctor.UserID && u.UserType == "Doctor");
 
             if (doctor.User == null)
@@ -98,7 +93,6 @@ namespace Hospital_Management.Controllers
                 }
             }
 
-            // Fetch users who have the role "Doctor" again to re-populate the dropdown in case of an error
             var doctorUsers = _context.Users.Where(u => u.UserType == "Doctor").ToList();
             ViewData["UserID"] = new SelectList(doctorUsers, "UserID", "Email", doctor.UserID);
             
@@ -126,9 +120,7 @@ namespace Hospital_Management.Controllers
             return View(doctor);
         }
 
-        // POST: Doctors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AdminOnly]
@@ -165,43 +157,7 @@ namespace Hospital_Management.Controllers
             return View(doctor);
         }
 
-        // GET: Doctors/Delete/5
-        /* public async Task<IActionResult> Delete(int? id)
-         {
-             if (id == null || _context.Doctors == null)
-             {
-                 return NotFound();
-             }
-
-             var doctor = await _context.Doctors
-                 .Include(d => d.User)
-                 .FirstOrDefaultAsync(m => m.DoctorID == id);
-             if (doctor == null)
-             {
-                 return NotFound();
-             }
-
-             return View(doctor);
-         }
-
-         // POST: Doctors/Delete/5
-         [HttpPost, ActionName("Delete")]
-         [ValidateAntiForgeryToken]
-         public async Task<IActionResult> DeleteConfirmed(int id)
-         {
-             if (_context.Doctors == null)
-             {
-                 return Problem("Entity set 'HealthCareDbContext.Doctors'  is null.");
-             }
-             var doctor = await _context.Doctors.FindAsync(id);
-             if (doctor != null)
-             {
-                 _context.Doctors.Remove(doctor);
-             }
-
-             await _context.SaveChangesAsync();
-             return RedirectToAction(nameof(Index));
-         }*/
+       
         [AdminOnly]
         public async Task<IActionResult> Delete(int? id)
         {

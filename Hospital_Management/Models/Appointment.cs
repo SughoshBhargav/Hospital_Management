@@ -37,5 +37,7 @@ namespace Hospital_Management.Models
 
         [ForeignKey("DoctorID")]
         public virtual Doctor? Doctor { get; set; }
+
+     
     }
 }

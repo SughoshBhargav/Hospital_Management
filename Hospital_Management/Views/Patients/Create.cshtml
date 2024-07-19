@@ -11,12 +11,10 @@
     
 }
 
-<h1>Create</h1>
 
-<h4>Patient</h4>
-<hr />
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-4">
+        <h2 class="text-center">Add Patient</h2>
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group my-2">
@@ -58,13 +56,14 @@
             </div>
             <div class="form-group my-2">
                 <input type="submit" value="Create" class="btn btn-primary" />
+                <a class="btn btn-danger"asp-action="Index">Back </a>
+
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
