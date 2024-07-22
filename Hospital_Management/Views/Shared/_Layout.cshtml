@@ -6,7 +6,7 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
-    var userEmail = HttpContextAccessor.HttpContext.User.Identity.Name;
+    var userName = HttpContextAccessor.HttpContext.User.Identity.Name;
     var role = User.FindFirstValue(ClaimTypes.Role);
 }
 
@@ -37,10 +37,10 @@
            
                 <ul class="navbar-nav navitems">
                    
-                    @if (!string.IsNullOrEmpty(userEmail))
+                    @if (!string.IsNullOrEmpty(userName))
                     {
 
-                        <span class=" btn btn-light text-dark mx-1"><span style="white-space: nowrap;" class="fw-bold " style="white-space: nowrap;">@role : </span> @userEmail</span>
+                        <span class=" btn btn-light text-dark mx-1"><span style="white-space: nowrap;" class="fw-bold " style="white-space: nowrap;">@role : </span> @userName</span>
 
                             <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
                                 <button type="submit" class="btn btn-success mx-4 fw-bold">Logout</button>
@@ -59,7 +59,7 @@
     </header>
     <div class="container-fluid ">
         <div class="row">
-            @if (User.Identity.IsAuthenticated)
+            @if (role != null)
             {
                 <div class="col-md-2">
                     <partial name="_SideNav" />

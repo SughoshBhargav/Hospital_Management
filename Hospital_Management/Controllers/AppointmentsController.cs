@@ -13,10 +13,11 @@ using YourProject.Attributes;
 
 namespace Hospital_Management.Controllers
 {
+    [Authorize]
     public class AppointmentsController : Controller
     {
         private readonly HealthCareDbContext _context;
-
+        private int appointmentID = 0;
         public AppointmentsController(HealthCareDbContext context)
         {
             _context = context;
@@ -78,7 +79,9 @@ namespace Hospital_Management.Controllers
         public IActionResult Create()
         {
             ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name");
+            
             ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name");
+            ViewBag.UserName = User.FindFirstValue(ClaimTypes.Name);
             return View();
         }
 
@@ -87,7 +90,7 @@ namespace Hospital_Management.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AppointmentID,PatientID,DoctorID,AppointmentDate,AppointmentTime,Status,CancellationReason,PatientHealthIssues")] Appointment appointment)
         {
-            appointment.Status = "Applied";
+            appointment.Status = "Registered";
 
             if (ModelState.IsValid)
             {
@@ -102,7 +105,6 @@ namespace Hospital_Management.Controllers
                 Console.WriteLine(error.ErrorMessage);
             }
 
-
             ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name", appointment.DoctorID);
             ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name", appointment.PatientID);
 
@@ -111,6 +113,7 @@ namespace Hospital_Management.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
+            appointmentID = (int)id;
             if (id == null || _context.Appointments == null)
             {
                 return NotFound();
@@ -142,7 +145,7 @@ namespace Hospital_Management.Controllers
             {
                 return NotFound();
             }
-
+           
             if (ModelState.IsValid)
             {
                 try
@@ -162,6 +165,11 @@ namespace Hospital_Management.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
+            }
+            var errors = ModelState.Values.SelectMany(u => u.Errors);
+            foreach(var error in errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
             }
             ViewData["DoctorID"] = new SelectList(_context.Doctors, "DoctorID", "Name", appointment.DoctorID);
             ViewData["PatientID"] = new SelectList(_context.Patients, "PatientID", "Name", appointment.PatientID);
@@ -199,6 +207,25 @@ namespace Hospital_Management.Controllers
 
 
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CancelAppointment(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment == null)
+            {
+                return Json(new { success = false, message = "Appointment not found" });
+            }
+
+            appointment.Status = "Cancelled";
+            _context.Update(appointment);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Appointment cancelled successfully" });
+        }
+
+
         private bool AppointmentExists(int id)
         {
             return (_context.Appointments?.Any(e => e.AppointmentID == id)).GetValueOrDefault();

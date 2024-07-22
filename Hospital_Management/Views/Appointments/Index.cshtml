@@ -17,6 +17,7 @@
 <table class="table table-bordered table-striped">
     <thead>
         <tr class="text-center">
+            <th>Patient Name</th>
             <th>Appointment Date</th>
             <th>Appointment Time</th>
             <th>Status</th>
@@ -31,6 +32,7 @@
         @foreach (var obj in Model)
         {
             <tr>
+                <td>@obj.Patient.Name</td>
                 <td>@obj.AppointmentDate</td>
                 <td>@obj.AppointmentTime</td>
                 <td>@obj.Status</td>

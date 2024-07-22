@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Hospital_Management.Data;
 using Hospital_Management.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital_Management.Controllers
 {
+    [Authorize]
     public class PatientsController : Controller
     {
         private readonly HealthCareDbContext _context;
@@ -139,7 +141,8 @@ namespace Hospital_Management.Controllers
             {
                 return NotFound();
             }
-            ViewData["UserID"] = new SelectList(_context.Users, "UserID", "Email", patient.UserID);
+            ViewBag.UserName = patient.Name;
+            
             return View(patient);
         }
 
@@ -202,6 +205,7 @@ namespace Hospital_Management.Controllers
             }
             catch (Exception ex)
             {
+
                 return Json(new { success = false, message = $"Failed to delete patient details: {ex.Message}" });
             }
 

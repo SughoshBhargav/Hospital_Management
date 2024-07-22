@@ -19,7 +19,7 @@ namespace Hospital_Management.Models
         [DataType(DataType.Date)]
         public DateTime AppointmentDate { get; set; }
 
-        [Required]
+        [Required]  
         [DataType(DataType.Time)]
         public TimeSpan AppointmentTime { get; set; }
 
